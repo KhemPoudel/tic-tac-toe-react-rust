@@ -1,31 +1,29 @@
 import React, {Component} from "react";
 import {Container, Row, Col} from 'react-bootstrap';
-import wasm from 'tic-tac-toe-wasm-khem';
 import Board from './Board.js';
 import SymbolSelectionPage from './SymbolSelectionPage.js';
-
 
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      //wasm: null,
-      //isWasmLoaded: false,
+      wasm: null,
+      isWasmLoaded: false,
       userSymbol: null,
       board: null,
       moves: [0, 0, 0, 0, 0, 0, 0, 0, 0],
     }
   }
 
-  // componentDidMount() {
-  //   import("wasm").then(module => {
-  //     this.setState({ isWasmLoaded: true, wasm: module });
-  //   });
-  // }
+  componentDidMount() {
+    import("tic-tac-toe-wasm-khem").then(module => {
+      this.setState({ isWasmLoaded: true, wasm: module });
+    });
+  }
 
   handleBoxClick(boxNumber) {
-    //console.log(boxNumber)
+    console.log(boxNumber)
     let {board, moves, userSymbol} = this.state;
     if(userSymbol && userSymbol == board.get_current_turn()) {
       try {
@@ -54,17 +52,14 @@ class App extends Component {
   }
 
   handleSymbolClick(userSymbol) {
-    let board = new wasm.Board(userSymbol);
+    let board = new this.state.wasm.Board(userSymbol);
     this.setState({ board, userSymbol });
   }
 
   render() {
-    // let activePage = this.state.isWasmLoaded
-    //   ? this.state.board?<Board moves={this.state.moves} handleBoxClick={this.handleBoxClick.bind(this)}/> :<SymbolSelectionPage handleSymbolClick={this.handleSymbolClick.bind(this)}/>
-    //   : <h2>Loading...</h2>
-    let activePage = this.state.board
-      ?<Board moves={this.state.moves} handleBoxClick={this.handleBoxClick.bind(this)}/> 
-      :<SymbolSelectionPage handleSymbolClick={this.handleSymbolClick.bind(this)}/>;
+    let activePage = this.state.isWasmLoaded
+      ? this.state.board?<Board moves={this.state.moves} handleBoxClick={this.handleBoxClick.bind(this)}/> :<SymbolSelectionPage handleSymbolClick={this.handleSymbolClick.bind(this)}/>
+      : <h2>Loading...</h2>
     return (
       <div className="tic_container">
         <div class="item-centerd">
