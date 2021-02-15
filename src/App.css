@@ -1,38 +1,77 @@
-.App {
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.tic_container {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 25% 50% 25%;
+  grid-template-rows: 25% 50% auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.item-centerd {
+  grid-column: 2;
+  grid-row: 2;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+#root {
+  height: 100%;
+  background-color: #ffc7df;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.board {
+  height: 100%;
+  display: grid;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  grid-template-columns: repeat(1fr, 3);
+  grid-template-rows: repeat(1fr, 3);
+  grid-template-areas:
+    "cell0 cell1 cell2"
+    "cell3 cell4 cell5"
+    "cell6 cell7 cell8";
 }
 
-.App-link {
-  color: #61dafb;
+.boardCell {
+  max-width: 180px;
+  max-height: 180px;
+  width: 80px;
+  height: 80px;
+  border: 1px solid;
+  text-align: center;
+  line-height: 80px;
+  font-size: 40px;
+  grid-area: cell;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.boardCell0 {
+  grid-area: cell0;
+}
+.boardCell1 {
+  grid-area: cell1;
+}
+.boardCell2 {
+  grid-area: cell2;
+}
+.boardCell3 {
+  grid-area: cell3;
+}
+.boardCell4 {
+  grid-area: cell4;
+}
+.boardCell5 {
+  grid-area: cell5;
+}
+.boardCell6 {
+  grid-area: cell6;
+}
+.boardCell7 {
+  grid-area: cell7;
+}
+.boardCell8 {
+  grid-area: cell8;
 }
