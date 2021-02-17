@@ -10,9 +10,10 @@ class App extends Component {
     this.state = {
       wasm: null,
       isWasmLoaded: false,
-      userSymbol: null,
+      userPlayer: null,
       board: null,
-      moves: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      moves: {},
+      boardMessage: "",
     }
   }
 
@@ -22,49 +23,82 @@ class App extends Component {
     });
   }
 
-  handleBoxClick(boxNumber) {
-    console.log(boxNumber)
-    let {board, moves, userSymbol} = this.state;
-    if(userSymbol && userSymbol == board.get_current_turn()) {
-      try {
-        board.make_move(boxNumber);
-        console.log("moves before: ", moves);
-        moves[boxNumber] = userSymbol;
-        console.log("moves after: ", moves);
-        this.setState({moves});
-        this.makeAutoMove();
-      } catch(e) {
-        alert(e);
+  makeMove(move, player) {
+    let {board, moves} = this.state;
+    let boardStatus = board.get_board_state();
+    let boardMessage = "";
+    if(boardStatus != 2) {
+      return;
+    }
+
+    try {
+      board.make_move(move);
+      moves[move] = player;
+      this.setState({moves});
+      boardStatus = board.get_board_state();
+      if (boardStatus == 0) {
+        boardMessage = "GAME DRAW";
+      } else if (boardStatus == 1) {
+        boardMessage = `Player(${board.get_winner() == 1 ? "X" : "O"}) WON`;
+      } else {
+        boardMessage = `Player(${board.get_current_turn() == 1 ? 'X' : 'O'})'s TURN`;
       }
+    } catch(e) {
+      boardMessage += e;
+    }
+
+    this.setState({boardMessage})
+  }
+
+  handleBoxClick(boxNumber) {
+    let {board, userPlayer} = this.state;
+    if(userPlayer && userPlayer == board.get_current_turn()) {
+      this.makeMove(boxNumber, userPlayer);
+      setTimeout(this.makeAutoMove.bind(this), 200);
     }
   }
 
   makeAutoMove() {
-    let {board, moves, userSymbol} = this.state;
+    let {board, userPlayer} = this.state;
     let best_move = board.get_best_move();
-    try {
-      board.make_move(best_move);
-      moves[best_move] = userSymbol == 1 ? 2 : 1;
-      this.setState({moves});
-    } catch(e) {
-      alert(e);
+    this.makeMove(best_move, userPlayer == 1 ? 2 : 1);
+  }
+
+  selectStartPlayer(isUserFirst) {
+    let {userPlayer} = this.state;
+    let startPlayer = isUserFirst ? userPlayer : userPlayer == 1 ? 2 : 1;
+    let board = new this.state.wasm.Board(startPlayer);
+    this.setState({ board, boardActive: isUserFirst, boardMessage: `Player(${board.get_current_turn() == "1" ? "X" : "O"})'s TURN`});
+    if(!isUserFirst) {
+      setTimeout(this.makeAutoMove.bind(this), 200);
     }
   }
 
-  handleSymbolClick(userSymbol) {
-    let board = new this.state.wasm.Board(userSymbol);
-    this.setState({ board, userSymbol });
+  handleSymbolClick(userPlayer) {
+    this.setState({ userPlayer, boardMessage: `Select if you want to go first or second`});
+  }
+
+  reset() {
+    this.setState({board: null, moves:{}, boardMessage: `Select if you want to go first or second`})
   }
 
   render() {
+    let {board, boardMessage, moves, startPlayer, userPlayer} = this.state;
     let activePage = this.state.isWasmLoaded
-      ? this.state.board?<Board moves={this.state.moves} handleBoxClick={this.handleBoxClick.bind(this)}/> :<SymbolSelectionPage handleSymbolClick={this.handleSymbolClick.bind(this)}/>
+      ? userPlayer
+        ?<Board
+          board= {board}
+          message={boardMessage}
+          moves={moves}
+          userPlayer = {userPlayer}
+          reset = {this.reset.bind(this)}
+          selectStartPlayer= {this.selectStartPlayer.bind(this)}
+          handleBoxClick={this.handleBoxClick.bind(this)}/>
+        :<SymbolSelectionPage handleSymbolClick={this.handleSymbolClick.bind(this)}/>
       : <h2>Loading...</h2>
     return (
-      <div className="tic_container">
-        <div class="item-centerd">
-            {activePage}
-        </div>
+      <div className="ticContainer">
+          {activePage}
       </div>
     );
   }

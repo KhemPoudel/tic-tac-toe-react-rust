@@ -1,26 +1,40 @@
+@font-face {
+    font-family: "GunHead",cursive;
+    src: local("GunHead"), url("./fonts/gunheadchick.ttf") format('ttf');
+}
+
+:root {
+  --bg-color: #ffc7df;
+  --border-color: #0D5D56;
+}
+
 html, body {
   height: 100%;
   margin: 0;
 }
 
-.tic_container {
+#root {
   height: 100%;
+  background-color: var(--bg-color);
   display: grid;
-  grid-template-columns: 25% 50% 25%;
-  grid-template-rows: 25% 50% auto;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   justify-content: center;
   align-items: center;
 }
 
-.item-centerd {
-  grid-column: 2;
-  grid-row: 2;
+.ticContainer {
   text-align: center;
 }
 
-#root {
-  height: 100%;
-  background-color: #ffc7df;
+.boardContainer {
+  display: grid;
+  grid-template-areas:
+    "boardMessage"
+    "board"
+    "boardActions";
+  row-gap: 10px;
+  justify-content: center;
+  align-items: center;
 }
 
 .board {
@@ -28,26 +42,55 @@ html, body {
   display: grid;
   justify-content: center;
   align-items: center;
-  grid-template-columns: repeat(1fr, 3);
-  grid-template-rows: repeat(1fr, 3);
   grid-template-areas:
     "cell0 cell1 cell2"
     "cell3 cell4 cell5"
     "cell6 cell7 cell8";
+  grid-area: board;
+}
+
+.boardMessage {
+  grid-area: boardMessage;
+  font-size: 30px;
+  text-transform: uppercase;
+}
+
+.boardActions {
+  grid-area: boardActions;
 }
 
 .boardCell {
-  max-width: 180px;
-  max-height: 180px;
-  width: 80px;
-  height: 80px;
-  border: 1px solid;
+  font-family: GunHead;
+  width: 120px;
+  height: 120px;
   text-align: center;
-  line-height: 80px;
-  font-size: 40px;
+  line-height: 120px;
   grid-area: cell;
+  font-size: 50px;
+  align-self: center;
+  border: 2px solid var(--border-color);
 }
 
+.boardCell.active:hover {
+  cursor: pointer;
+  background-color: #F8BBD0;
+}
+
+.board .boardCell:nth-child(-n + 3) {
+  border-top: none !important;
+}
+
+.board .boardCell:nth-child(3n + 1) {
+  border-left: none !important;
+}
+
+.board .boardCell:nth-last-child(3n + 1) {
+  border-right: none;
+}
+
+.board .boardCell:nth-last-child(-n + 3) {
+  border-bottom: none;
+}
 .boardCell0 {
   grid-area: cell0;
 }
